@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyPassword Generator</title>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 500px; margin: 40px auto; padding: 0 16px; }
+    label { display: block; margin: 12px 0; }
+    input { width: 60px; margin-left: 8px; }
+    button { padding: 8px 16px; margin-top: 10px; cursor: pointer; }
+    #output { margin-top: 20px; font-size: 1.2em; font-weight: bold; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <h1>Welcome to the PyPassword Generator!</h1>
+  <p id="status">Loading Python... (this can take a few seconds)</p>
+
+  <label>How many letters would you like in your password?
+    <input type="number" id="letters" min="0" value="8">
+  </label>
+  <label>How many symbols would you like?
+    <input type="number" id="symbols" min="0" value="2">
+  </label>
+  <label>How many numbers would you like?
+    <input type="number" id="numbers" min="0" value="2">
+  </label>
+
+  <button id="generate" disabled>Generate Password</button>
+  <p id="output"></p>
+
+  <!-- Your Python code -->
+  <script type="text/python" id="python-code">
+import random
+
+letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+symbols = ['!', '#', '$', '%', '&', '(', ')', '*', '+']
+
+def generate_password(nr_letters, nr_symbols, nr_numbers):
+    combined_list = []
+
+    for letter in range(0, nr_letters):
+        random_letter = random.choice(letters)
+        combined_list.append(random_letter)
+    for number in range(0, nr_numbers):
+        random_number = random.choice(numbers)
+        combined_list.append(random_number)
+    for symbol in range(0, nr_symbols):
+        random_symbol = random.choice(symbols)
+        combined_list.append(random_symbol)
+
+    random.shuffle(combined_list)
+
+    password = ""
+    for end in combined_list:
+        password += end
+    return password
+  </script>
+
+  <!-- JavaScript that runs the Python code with Pyodide -->
+  <script>
+    async function main() {
+      const pyodide = await loadPyodide();
+      pyodide.runPython(document.getElementById("python-code").textContent);
+      const generatePassword = pyodide.globals.get("generate_password");
+
+      document.getElementById("status").textContent = "Python is ready!";
+      const button = document.getElementById("generate");
+      button.disabled = false;
+
+      button.addEventListener("click", () => {
+        const nrLetters = parseInt(document.getElementById("letters").value) || 0;
+        const nrSymbols = parseInt(document.getElementById("symbols").value) || 0;
+        const nrNumbers = parseInt(document.getElementById("numbers").value) || 0;
+
+        const password = generatePassword(nrLetters, nrSymbols, nrNumbers);
+        document.getElementById("output").textContent = "Your PyPassword is " + password;
+      });
+    }
+    main();
+  </script>
+</body>
+</html>
