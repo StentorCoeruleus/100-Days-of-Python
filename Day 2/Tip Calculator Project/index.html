@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tip Calculator</title>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 16px; }
+    #output { background: #111; color: #0f0; padding: 16px; border-radius: 8px; white-space: pre-wrap; min-height: 100px; }
+  </style>
+</head>
+<body>
+  <h1>Tip Calculator</h1>
+  <button id="run">Start</button>
+  <pre id="output">Loading Python...</pre>
+
+  <script>
+    const out = document.getElementById("output");
+    let pyodide;
+
+    (async () => {
+      pyodide = await loadPyodide();
+      pyodide.setStdout({ batched: (text) => out.textContent += text + "\n" });
+      pyodide.setStdin({ stdin: () => prompt(out.textContent.split("\n").slice(-2).join("") || "Enter a value:") });
+      out.textContent = "Ready! Click Start.";
+    })();
+
+    document.getElementById("run").onclick = async () => {
+      out.textContent = "";
+      const code = await (await fetch("main.py")).text();
+      try { await pyodide.runPythonAsync(code); }
+      catch (e) { out.textContent += "\nError: " + e.message; }
+    };
+  </script>
+</body>
+</html>
