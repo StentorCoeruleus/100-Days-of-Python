@@ -2,34 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tip Calculator</title>
   <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
   <style>
     body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 16px; }
     #output { background: #111; color: #0f0; padding: 16px; border-radius: 8px; white-space: pre-wrap; min-height: 100px; }
+    button { padding: 8px 18px; margin-bottom: 12px; cursor: pointer; }
+    button:disabled { opacity: 0.5; cursor: wait; }
   </style>
 </head>
 <body>
   <h1>Tip Calculator</h1>
-  <button id="run">Start</button>
+  <button id="run" disabled>Loading…</button>
   <pre id="output">Loading Python...</pre>
 
   <script>
     const out = document.getElementById("output");
+    const btn = document.getElementById("run");
+    const write = (text) => { out.textContent += text + "\n"; };
     let pyodide;
+
+    // Browser pop-up; Cancel counts as an empty answer
+    globalThis.askUser = (question) => prompt(question) ?? "";
 
     (async () => {
       pyodide = await loadPyodide();
-      pyodide.setStdout({ batched: (text) => out.textContent += text + "\n" });
-      pyodide.setStdin({ stdin: () => prompt(out.textContent.split("\n").slice(-2).join("") || "Enter a value:") });
+      pyodide.setStdout({ batched: write });
+      pyodide.setStderr({ batched: write });
+
+      // Replace Python's input() so the pop-up shows the real question
+      pyodide.runPython(`
+import builtins, js
+def _input(question=""):
+    answer = str(js.askUser(question))
+    print(question + answer)
+    return answer
+builtins.input = _input
+`);
       out.textContent = "Ready! Click Start.";
+      btn.textContent = "Start";
+      btn.disabled = false;
     })();
 
-    document.getElementById("run").onclick = async () => {
+    btn.onclick = async () => {
+      btn.disabled = true;
       out.textContent = "";
-      const code = await (await fetch("main.py")).text();
-      try { await pyodide.runPythonAsync(code); }
-      catch (e) { out.textContent += "\nError: " + e.message; }
+      try {
+        const res = await fetch("task.py", { cache: "no-store" });
+        if (!res.ok) throw new Error("Couldn't load task.py. Is it in the same folder as index.html?");
+        await pyodide.runPythonAsync(await res.text());
+      } catch (e) {
+        write("Error: " + e.message);
+      }
+      btn.textContent = "Start again";
+      btn.disabled = false;
     };
   </script>
 </body>
