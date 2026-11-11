@@ -2,17 +2,17 @@
 
 ## Overview
 
-The **PyPassword Generator** is a text-based Python program I built as the final project for **Day 5** of Dr Angela Yu's *100 Days of Code: The Complete Python Pro Bootcamp*.
+The **PyPassword Generator** is a text-based Python program I built as the final project for **Day 5** of Dr. Angela Yu's *100 Days of Code: The Complete Python Pro Bootcamp*.
 
-It tackles an everyday security problem: creating strong, unpredictable passwords. Weak or reused passwords are one of the most common ways that online accounts get compromised. A password made from a random mix of letters, numbers and symbols is much harder to guess or crack.
+It tackles an everyday security problem: creating strong, unpredictable passwords. Weak or reused passwords are one of the most common ways that online accounts are compromised. A password made from a random selection of letters, numbers and symbols is much harder to guess or crack.
 
 The user chooses how many letters, symbols and numbers they want in their password. The program picks random characters from each group, shuffles them into a random order, and displays the finished password.
 
-The program runs entirely in the terminal, and the user interacts with it by typing their answers to its questions. It shows how **loops** and Python's **`random` module** can automate a repetitive task and produce a different result every time the program runs.
+The program runs entirely in the terminal, and the user interacts with it by typing their answers to its questions. This project showcases how **loops** and Python's **`random` module** can automate a repetitive task and produce a different result every time the program runs.
 
 ---
 
-## ▶️ How to Play
+## How to Play
 
 There are three ways to try the PyPassword Generator.
 
@@ -64,7 +64,7 @@ The program follows an **input → process → output** structure. It collects t
 
 At the top of the program, three lists store every character the password could contain:
 
-- **Letters:** all 26 letters of the alphabet, in both lowercase and uppercase (52 characters)
+- **Letters:** all 26 letters of the alphabet, in both lowercase and uppercase (52 characters in total)
 - **Numbers:** the digits `0` to `9`
 - **Symbols:** `! # $ % & ( ) * +`
 
@@ -264,7 +264,7 @@ Possible extensions to the project include:
 - **Copy to clipboard:** automatically copy the password, ready to paste.
 - **Functions:** move each step into its own reusable function to improve organisation.
 
-These improvements would build on the existing program and give me the chance to practise more advanced Python concepts, such as additional modules, error handling (`try` / `except`) and functions.
+These improvements would build on the existing program and give me the chance to practise more advanced Python concepts, such as additional modules and functions.
 
 ---
 
@@ -279,6 +279,6 @@ These improvements would build on the existing program and give me the chance to
 
 ## Course Context
 
-This project was completed as part of **Day 5** of Dr Angela Yu's *100 Days of Code: The Complete Python Pro Bootcamp*.
+This project was completed as part of **Day 5** of Dr. Angela Yu's *100 Days of Code: The Complete Python Pro Bootcamp*.
 
 Day 5 focuses on **`for` loops, the `range()` function and code blocks**. The PyPassword Generator brings these together with what I learned on Day 4 about **randomisation and lists** to build a practical, security-focused tool. The project forms part of my ongoing journey to develop my Python programming skills, strengthen my understanding of software development fundamentals, and build a portfolio of practical coding projects on GitHub.
