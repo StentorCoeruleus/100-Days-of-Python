@@ -2,7 +2,7 @@
 
 ## Overview
 
-**Hangman** is a text-based word-guessing game I built in Python as the final project for **Day 7** of Dr. Angela Yu's *100 Days of Code: The Complete Python Pro Bootcamp*.
+Hangman is a text-based word-guessing game I built in Python as the final project for Day 7 of Dr. Angela Yu's *100 Days of Code: The Complete Python Pro Bootcamp*.
 
 The game is based on the classic pen-and-paper game. The computer picks a secret word at random, and the player tries to work it out by guessing one letter at a time. Each correct guess reveals that letter wherever it appears in the word. Each wrong guess costs the player a life and adds another part to the hangman drawing. The player wins by revealing the whole word before they run out of lives.
 
@@ -58,11 +58,11 @@ Because this game is split across three files, it needs an online editor that su
 
 ## How the Game Works
 
-The game follows a **game loop** structure. It sets up the game once, then repeats the same steps (ask for a guess, check it, update the display) until the player either wins or loses.
+The game follows a game loop structure. It sets up the game once, then repeats the same steps (ask for a guess, check it, update the display) until the player either wins or loses.
 
 ### 1. Starting the Game
 
-When the program starts, it displays the Hangman logo in ASCII art and a welcome message. The player starts with **6 lives**.
+When the program starts, it displays the Hangman logo in ASCII art and a welcome message. The player starts with 6 lives.
 
 ### 2. Choosing the Secret Word
 
@@ -148,11 +148,11 @@ Keeping the data (the words and art) separate from the logic makes `main.py` muc
 
 ## Python Concepts Used
 
-This project combines many of the Python concepts from the first week of the course, focusing on **`while` loops**, **lists**, **conditionals** and **modules**.
+This project combines many of the Python concepts from the first week of the course, focusing on `while` loops, lists, conditionals and modules.
 
 ### 1. Importing Modules: Built-in and My Own
 
-As well as importing Python's built-in `random` module, I imported **my own Python files** as modules:
+As well as importing Python's built-in `random` module, I imported my own Python files as modules:
 
 ```python
 import random
@@ -193,7 +193,7 @@ For a five-letter word, `len()` returns `5`, so the loop runs 5 times and builds
 
 ### 4. `while` Loops and Boolean Flags: The Game Loop
 
-A `while` loop keeps repeating **as long as a condition is true**. This makes it ideal for a game, because nobody knows in advance how many guesses the player will need.
+A `while` loop keeps repeating as long as a condition is true. This makes it ideal for a game, because nobody knows in advance how many guesses the player will need.
 
 ```python
 game_over = False
@@ -202,7 +202,7 @@ while not game_over:
     # ask for a guess, check it, update the display...
 ```
 
-`game_over` is a **Boolean flag**, a variable that is either `True` or `False`. It starts as `False`, so `not game_over` is `True` and the loop keeps running. When the player wins or loses, the program sets `game_over = True`, and the loop stops.
+`game_over` is a *Boolean flag*, a variable that is either `True` or `False`. It starts as `False`, so `not game_over` is `True` and the loop keeps running. When the player wins or loses, the program sets `game_over = True`, and the loop stops.
 
 ```python
 if lives == 0:
@@ -212,7 +212,7 @@ if "_" not in display:
     game_over = True
 ```
 
-A `for` loop is best when you know how many times to repeat something, like the password length in Day 5. A `while` loop is best when you **don't** know.
+A `for` loop is best when you know how many times to repeat something, like the password length in Day 5. A `while` loop is best when you don't know.
 
 ### 5. `.lower()`: Handling Uppercase Input
 
@@ -226,7 +226,7 @@ All the words in the word list are lowercase. Without `.lower()`, a guess of `A`
 
 ### 6. Looping Through a String
 
-A `for` loop can go through a **string** one character at a time, just like a list. The program uses this to compare the player's guess with each letter of the secret word:
+A `for` loop can go through a string one character at a time, just like a list. The program uses this to compare the player's guess with each letter of the secret word:
 
 ```python
 for letter in chosen_word:
@@ -287,7 +287,7 @@ lives -= 1    # same as: lives = lives - 1
 
 ### 10. List Indexing: Choosing the Right Drawing
 
-The 7 stages of the hangman drawing are stored in a list in `hangman_art.py`. They are ordered from the **finished** drawing at index `0` to the **empty** gallows at index `6`. Because of this order, the number of lives left can be used directly as the index:
+The 7 stages of the hangman drawing are stored in a list in `hangman_art.py`. They are ordered from the finished drawing at index `0` to the empty gallows at index `6`. Because of this order, the number of lives left can be used directly as the index:
 
 ```python
 print(hangman_art.stages[lives])
@@ -303,9 +303,9 @@ This avoids needing an `if` / `elif` statement for every possible number of live
 
 ### 11. Multi-line Strings, Raw Strings and ASCII Art
 
-The logo and hangman drawings are written as **multi-line strings**, using triple quotes `'''`, so they can span several lines and keep their shape.
+The logo and hangman drawings are written as multi-line strings, using triple quotes `'''`, so they can span several lines and keep their shape.
 
-Some of them also use the `r` prefix to make a **raw string**:
+Some of them also use the `r` prefix to make a raw string
 
 ```python
 stages = [r'''
@@ -319,7 +319,7 @@ stages = [r'''
 ''', ...]
 ```
 
-In a normal string, Python treats a backslash `\` as the start of an **escape sequence** (like `\n` for a new line). In a raw string, backslashes are displayed exactly as typed, which is essential for drawing the hangman's arms and legs.
+In a normal string, Python treats a backslash `\` as the start of an escape sequence (like `\n` for a new line). In a raw string, backslashes are displayed exactly as typed, which is essential for drawing the hangman's arms and legs.
 
 ### 12. f-Strings: Showing the Game Status
 
@@ -338,19 +338,19 @@ This project helped me combine everything from the first week of the course into
 
 Key learning outcomes include:
 
-- Splitting a program into **multiple files** and importing my own modules.
-- Using a **`while` loop** with a **Boolean flag** to build a game loop.
+- Splitting a program into multiple files and importing my own modules.
+- Using a `while` loop with a Boolean flag to build a game loop.
 - Understanding when to use a `while` loop instead of a `for` loop.
-- Looping through a **string** character by character.
-- Using lists to **store and remember** information between turns.
+- Looping through a string character by character.
+- Using lists to store and remember information between turns.
 - Checking membership with the `in` and `not in` operators.
 - Using `if`, `elif` and `else` to handle different outcomes.
 - Using `.lower()` to make user input consistent.
-- Using **list indexing** to link the number of lives to the correct drawing.
+- Using list indexing to link the number of lives to the correct drawing.
 - Displaying ASCII art with multi-line and raw strings.
-- **Breaking a large problem down** into smaller steps before writing any code.
+- Breaking a large problem down into smaller steps before writing any code.
 
-The most important lesson was **problem decomposition**. Hangman is too big to write all at once. The course encouraged me to plan the game as a flowchart first, then build and test it one step at a time: choosing a word, checking a guess, revealing letters, tracking lives, and finally ending the game. This step-by-step approach is how real software is built.
+The most important lesson was problem decomposition. Hangman is too big to write all at once. The course encouraged me to plan the game as a flowchart first, then build and test it one step at a time: choosing a word, checking a guess, revealing letters, tracking lives, and finally ending the game. This step-by-step approach is how real software is built.
 
 ---
 
@@ -358,7 +358,7 @@ The most important lesson was **problem decomposition**. Hangman is too big to w
 
 Possible extensions to the project include:
 
-- **Don't punish repeated guesses:** at the moment, guessing the same wrong letter twice costs two lives. The game could skip the rest of the turn with `continue` when a letter has already been guessed.
+- **Don't punish repeated guesses:** at the moment, guessing the same wrong letter twice costs two lives. The game could skip the rest of the turn with when a letter has already been guessed.
 - **Input validation:** reject guesses that are longer than one character, or that aren't letters.
 - **Show guessed letters:** display all the letters the player has already tried.
 - **Replay functionality:** let the player start a new game without restarting the program.
@@ -367,12 +367,12 @@ Possible extensions to the project include:
 - **Word categories:** let the player choose a theme, such as animals, countries or science.
 - **Functions:** move each step of the game into its own reusable function to improve organisation.
 
-These improvements would build on the existing program and give me the chance to practise more advanced Python concepts, such as `continue`, input validation and functions.
+These improvements would build on the existing program and give me the chance to practise more advanced Python concepts, such as input validation and functions.
 
 ---
 
 ## Course Context
 
-This project was completed as part of **Day 7** of Dr. Angela Yu's *100 Days of Code: The Complete Python Pro Bootcamp*.
+This project was completed as part of Day 7 of Dr. Angela Yu's *100 Days of Code: The Complete Python Pro Bootcamp*.
 
-Day 7 brings together everything from the first week of the course, including variables, conditionals, randomisation, lists, `for` loops and `while` loops, to build a complete game from scratch. The course also introduced **flowcharts** as a way to plan a program and break a complex problem into manageable steps before coding. The project forms part of my ongoing journey to develop my Python programming skills, strengthen my understanding of software development fundamentals, and build a portfolio of practical coding projects on GitHub.
+Day 7 brings together everything from the first week of the course, including variables, conditionals, randomisation, lists, `for` loops and `while` loops, to build a complete game from scratch. The course also introduced flowcharts as a way to plan a program and break a complex problem into manageable steps before coding. The project forms part of my ongoing journey to develop my Python programming skills, strengthen my understanding of software development fundamentals, and build a portfolio of practical coding projects on GitHub.
