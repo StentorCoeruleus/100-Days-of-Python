@@ -46,8 +46,10 @@ while game_running:
             saved_answer = answer
             same_calculation = True
 
-        elif "exit":
+        elif continue_calculation=="exit":
             game_running = False
+        else:
+            print("Sorry, that wasn't an option. Starting a new calculation...")
 
     elif same_calculation:
         first_number=float(saved_answer)
@@ -68,8 +70,11 @@ while game_running:
         elif continue_calculation=="ans":
             saved_answer=answer
 
-        elif "exit":
+        elif continue_calculation=="exit":
             game_running=False
+        else:
+            print("Sorry, that wasn't an option. Continuing with your last answer...")
+            saved_answer=answer
 
 
 
