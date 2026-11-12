@@ -2,62 +2,201 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tip Calculator</title>
-  <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
   <style>
-    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 16px; }
-    #output { background: #111; color: #0f0; padding: 16px; border-radius: 8px; white-space: pre-wrap; min-height: 100px; }
-    button { padding: 8px 18px; margin-bottom: 12px; cursor: pointer; }
-    button:disabled { opacity: 0.5; cursor: wait; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 30px 16px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 { margin-top: 0; }
+    button {
+      font-size: 16px;
+      padding: 8px 18px;
+      cursor: pointer;
+    }
+    #terminal {
+      background: #111;
+      color: #33ff66;
+      font-family: "Courier New", monospace;
+      font-size: 14px;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 16px;
+      min-height: 300px;
+      max-height: 70vh;
+      overflow: auto;
+    }
+    #output {
+      white-space: pre;
+      margin: 0;
+    }
+    #input-row {
+      display: none;
+      margin-top: 6px;
+    }
+    #input-row span { color: #33ff66; }
+    #user-input {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid #33ff66;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      width: 60%;
+    }
   </style>
 </head>
 <body>
-  <h1>Tip Calculator</h1>
-  <button id="run" disabled>Loading…</button>
-  <pre id="output">Loading Python...</pre>
+  <div class="container">
+    <h1 id="title">Tip Calculator</h1>
+    <button id="start-btn" disabled>Loading Python…</button>
+    <div id="terminal">
+      <pre id="output"></pre>
+      <div id="input-row">
+        <span>&gt; </span><input id="user-input" type="text" autocomplete="off">
+      </div>
+    </div>
+  </div>
 
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
   <script>
-    const out = document.getElementById("output");
-    const btn = document.getElementById("run");
-    const write = (text) => { out.textContent += text + "\n"; };
-    let pyodide;
+    // ===== SETTINGS: change these for each project =====
+    const PAGE_TITLE = "Tip Calculator";
+    const MAIN_FILE = "task.py";                                   // the file that runs the program
+    const EXTRA_FILES = [];    // modules that MAIN_FILE imports ([] if none)
+    // ===================================================
 
-    // Browser pop-up; Cancel counts as an empty answer
-    globalThis.askUser = (question) => prompt(question) ?? "";
+    document.title = PAGE_TITLE;
+    document.getElementById("title").textContent = PAGE_TITLE;
 
-    (async () => {
-      pyodide = await loadPyodide();
-      pyodide.setStdout({ batched: write });
-      pyodide.setStderr({ batched: write });
+    const output = document.getElementById("output");
+    const terminal = document.getElementById("terminal");
+    const inputRow = document.getElementById("input-row");
+    const userInput = document.getElementById("user-input");
+    const startBtn = document.getElementById("start-btn");
 
-      // Replace Python's input() so the pop-up shows the real question
-      pyodide.runPython(`
-import builtins, js
-def _input(question=""):
-    answer = str(js.askUser(question))
-    print(question + answer)
-    return answer
-builtins.input = _input
-`);
-      out.textContent = "Ready! Click Start.";
-      btn.textContent = "Start";
-      btn.disabled = false;
-    })();
+    let pyodide = null;
+    let resolveInput = null;
 
-    btn.onclick = async () => {
-      btn.disabled = true;
-      out.textContent = "";
-      try {
-        const res = await fetch("task.py", { cache: "no-store" });
-        if (!res.ok) throw new Error("Couldn't load task.py. Is it in the same folder as index.html?");
-        await pyodide.runPythonAsync(await res.text());
-      } catch (e) {
-        write("Error: " + e.message);
+    function write(text) {
+      output.textContent += text;
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    // Called by Python's input(): shows the prompt and waits for the user to press Enter
+    function waitForInput(prompt) {
+      write(prompt);
+      inputRow.style.display = "block";
+      userInput.value = "";
+      userInput.focus();
+      return new Promise(resolve => { resolveInput = resolve; });
+    }
+
+    userInput.addEventListener("keydown", event => {
+      if (event.key === "Enter" && resolveInput) {
+        const value = userInput.value;
+        write(value + "\n");
+        inputRow.style.display = "none";
+        const resolve = resolveInput;
+        resolveInput = null;
+        resolve(value);
       }
-      btn.textContent = "Start again";
-      btn.disabled = false;
-    };
+    });
+
+    async function fetchFile(name) {
+      const response = await fetch(name + "?v=" + Date.now());
+      if (!response.ok) {
+        throw new Error(`Could not find "${name}" in this folder (error ${response.status}). ` +
+                        `Check the file name matches exactly, including capital letters.`);
+      }
+      return await response.text();
+    }
+
+    // Turns  input("...")  into  (await ainput("..."))  so the browser can wait for the user
+    function convertInputs(code) {
+      let result = "";
+      let i = 0;
+      const pattern = /(?<![\w.])input\(/g;
+      let match;
+      while ((match = pattern.exec(code)) !== null) {
+        const start = match.index;
+        let j = start + "input(".length;
+        let depth = 1;
+        let quote = null;
+        while (j < code.length && depth > 0) {
+          const ch = code[j];
+          if (quote) {
+            if (ch === "\\") j++;
+            else if (ch === quote) quote = null;
+          } else if (ch === '"' || ch === "'") quote = ch;
+          else if (ch === "(") depth++;
+          else if (ch === ")") depth--;
+          j++;
+        }
+        result += code.slice(i, start) + "(await a" + code.slice(start, j) + ")";
+        i = j;
+        pattern.lastIndex = j;
+      }
+      return result + code.slice(i);
+    }
+
+    async function setup() {
+      try {
+        pyodide = await loadPyodide();
+        pyodide.setStdout({ batched: line => write(line + "\n") });
+        pyodide.setStderr({ batched: line => write(line + "\n") });
+        pyodide.globals.set("js_input", waitForInput);
+        startBtn.textContent = "Start";
+        startBtn.disabled = false;
+      } catch (error) {
+        write("Error loading Python: " + error + "\n");
+      }
+    }
+
+    async function run() {
+      startBtn.disabled = true;
+      startBtn.textContent = "Running…";
+      output.textContent = "";
+      try {
+        // Save any extra modules into Python's file system so "import" can find them
+        for (const name of EXTRA_FILES) {
+          pyodide.FS.writeFile("/home/pyodide/" + name, await fetchFile(name));
+        }
+
+        // Replace input(...) with an awaited version that waits for the text box
+        const code = convertInputs(await fetchFile(MAIN_FILE));
+
+        await pyodide.runPythonAsync(`
+import sys, importlib
+if "/home/pyodide" not in sys.path:
+    sys.path.insert(0, "/home/pyodide")
+importlib.invalidate_caches()
+for _name in ${JSON.stringify(EXTRA_FILES.map(f => f.replace(/\.py$/, "")))}:
+    sys.modules.pop(_name, None)
+
+async def ainput(prompt=""):
+    return str(await js_input(prompt))
+`);
+        await pyodide.runPythonAsync(code);
+        write("\n--- Program finished. Press Restart to play again. ---\n");
+      } catch (error) {
+        write("\nError: " + error.message + "\n");
+      }
+      inputRow.style.display = "none";
+      startBtn.textContent = "Restart";
+      startBtn.disabled = false;
+    }
+
+    startBtn.addEventListener("click", run);
+    setup();
   </script>
 </body>
 </html>
