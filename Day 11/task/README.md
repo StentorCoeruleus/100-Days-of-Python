@@ -18,7 +18,7 @@ There are three ways to try Blackjack.
 
 **[Launch Blackjack](https://stentorcoeruleus.github.io/100-Days-of-Python/Day%2011/task/)**
 
-This runs the Python code directly in your web browser using [Pyodide](https://pyodide.org/). Click **Start**, type your choices into the box, and press **Enter**.
+This runs the Python code directly in your web browser using [Pyodide](https://pyodide.org/). Click *Start*, type your choices into the box, and press *Enter*.
 
 ### Option 2: Run it on your computer with Python 3
 
@@ -52,7 +52,7 @@ No external libraries are required. The `random` module comes built into Python.
 
 ### Option 3: Run it in an online Python editor
 
-Because this game is split across two files, it needs an online editor that supports multiple files, such as [Replit](https://replit.com/). Create a new Python project, add `art.py` as an extra file, paste in the code for both files, and click **Run**.
+Because this game is split across two files, it needs an online editor that supports multiple files, such as [Replit](https://replit.com/). Create a new Python project, add `art.py` as an extra file, paste in the code for both files, and click *Run*.
 
 ---
 
@@ -160,8 +160,8 @@ Keeping the logo in `art.py` keeps `main.py` focused on the game's logic. I've k
 
 For this project I set myself a two-stage approach:
 
-1. **Write the whole game in full**, without functions, so I could focus on getting the rules right.
-2. **Go back over it and simplify it**, by spotting repeated code and moving it into functions.
+1. Write the whole game in full, without functions, so I could focus on getting the rules right.
+2. Go back over it and simplify it, by spotting repeated code and moving it into functions.
 
 Both stages taught me a lot, mainly through the bugs I found along the way.
 
@@ -182,7 +182,7 @@ I meant "if 10 and 11 are both in the computer's cards". Python reads it as:
 if (10) and (11 in computer_cards):
 ```
 
-Each side of `and` is checked separately. A non-zero number on its own is always **truthy**, so `10` always counts as `True`, and the condition only checked whether the computer had an Ace. In one test, the computer was dealt `[11, 4]` and I never got the chance to hit or stand. I fixed it by writing out the full check on both sides:
+Each side of `and` is checked separately. A non-zero number on its own is always truthy, so `10` always counts as `True`, and the condition only checked whether the computer had an Ace. In one test, the computer was dealt `[11, 4]` and I never got the chance to hit or stand. I fixed it by writing out the full check on both sides:
 
 ```python
 if 10 in computer_cards and 11 in computer_cards:
@@ -202,9 +202,9 @@ Nothing ever set `game_running` to `False`, so typing `EXIT` just asked the ques
 
 #### Bug 4: Two Aces in the opening hand
 
-If the first two cards were `[11, 11]`, the score was 22. For the computer, 22 is already at least 17, so its drawing loop never ran and the Ace was never converted. I added a check straight after the deal. I also worked out that only **one** Ace needs to change: `[11, 1]` scores 12, which is better than `[1, 1]`, which scores 2. The second Ace stays at 11 until it's needed.
+If the first two cards were `[11, 11]`, the score was 22. For the computer, 22 is already at least 17, so its drawing loop never ran and the Ace was never converted. I added a check straight after the deal. I also worked out that only one Ace needs to change: `[11, 1]` scores 12, which is better than `[1, 1]`, which scores 2. The second Ace stays at 11 until it's needed.
 
-At first I wrote this check with `if` for the computer and `elif` for the player. That meant that if **both** sides were dealt two Aces, only the computer's hand was fixed. Changing the `elif` to a separate `if` solved it, because the two checks don't depend on each other.
+At first I wrote this check with `if` for the computer and `elif` for the player. That meant that if both sides were dealt two Aces, only the computer's hand was fixed. Changing the `elif` to a separate `if` solved it, because the two checks don't depend on each other.
 
 #### Bug 5: Getting the results right
 
@@ -267,7 +267,7 @@ At first I kept `+=` from the draft:
 my_score += calculate_score(my_cards)
 ```
 
-Because `calculate_score()` already returns the total of the **whole** hand, this added the full total on top of the previous score. A hand of `[5, 6, 3]` (14) was shown as 25. Changing `+=` to `=` fixed it. The score is now recalculated from the hand every time, so it can never get out of step with the cards.
+Because `calculate_score()` already returns the total of the whole hand, this added the full total on top of the previous score. A hand of `[5, 6, 3]` (14) was shown as 25. Changing `+=` to `=` fixed it. The score is now recalculated from the hand every time, so it can never get out of step with the cards.
 
 #### Other tidying
 
