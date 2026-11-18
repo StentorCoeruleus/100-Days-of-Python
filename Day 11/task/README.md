@@ -16,7 +16,7 @@ There are three ways to try Blackjack.
 
 ### Option 1: Play in your browser (no installation)
 
-**[Launch Blackjack](https://stentorcoeruleus.github.io/100-Days-of-Python/Day%2011/Blackjack%20Project/)**
+**[Launch Blackjack](https://stentorcoeruleus.github.io/100-Days-of-Python/Day%2011/task/)**
 
 This runs the Python code directly in your web browser using [Pyodide](https://pyodide.org/). Click **Start**, type your choices into the box, and press **Enter**.
 
@@ -39,7 +39,7 @@ No external libraries are required. The `random` module comes built into Python.
      ```
 2. Open a terminal in the project folder:
    ```bash
-   cd "100-Days-of-Python/Day 11/Blackjack Project"
+   cd "100-Days-of-Python/Day 11/task"
    ```
 3. Run the Python script:
    ```bash
