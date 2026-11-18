@@ -1,8 +1,8 @@
 # 100 Days of Python
 
-My projects from Dr. Angela Yu's **100 Days of Code: The Complete Python Pro Bootcamp**.
+My projects from Dr. Angela Yu's *100 Days of Code: The Complete Python Pro Bootcamp*.
 
-I'm teaching myself Python as part of my move into software development. Each project folder contains the code, a detailed README explaining how the program works and what I learned, and a **live version you can play in your browser**. No installation needed.
+I'm teaching myself Python as part of my move into software development. Each project folder contains the code, a detailed README explaining how the program works and what I learned, and a live version you can play in your browser. No installation needed.
 
 ---
 
@@ -15,12 +15,13 @@ I'm teaching myself Python as part of my move into software development. Each pr
 | 5 | [PyPassword Generator](Day%205/Password%20Generator%20Project) | `for` loops, `range()`, lists, the `random` module | [▶️ Play](https://stentorcoeruleus.github.io/100-Days-of-Python/Day%205/Password%20Generator%20Project/) |
 | 7 | [Hangman](Day%207/task) | `while` loops, modules, lists, game loops | [▶️ Play](https://stentorcoeruleus.github.io/100-Days-of-Python/Day%207/task/) |
 | 10 | [Calculator](Day%2010/Calculator%20Project) | Functions with outputs, dictionaries, Boolean flags | [▶️ Play](https://stentorcoeruleus.github.io/100-Days-of-Python/Day%2010/Calculator%20Project/) |
+| 11 | [Blackjack](Day%2011/task) | Capstone project: functions with `return`, lists, `while` loops, refactoring a full draft | [▶️ Play](https://stentorcoeruleus.github.io/100-Days-of-Python/Day%2011/task/) |
 
 ---
 
 ## How the Live Versions Work
 
-Each project includes an `index.html` file that runs the original Python code directly in the browser using [Pyodide](https://pyodide.org/), a version of Python built for the web. The pages are hosted for free with **GitHub Pages**.
+Each project includes an `index.html` file that runs the original Python code directly in the browser using [Pyodide](https://pyodide.org/), a version of Python built for the web. The pages are hosted for free with GitHub Pages.
 
 ---
 
