@@ -16,6 +16,7 @@ I'm teaching myself Python as part of my move into software development. Each pr
 | 7 | [Hangman](Day%207/task) | `while` loops, modules, lists, game loops | [▶️ Play](https://stentorcoeruleus.github.io/100-Days-of-Python/Day%207/task/) |
 | 10 | [Calculator](Day%2010/Calculator%20Project) | Functions with outputs, dictionaries, Boolean flags | [▶️ Play](https://stentorcoeruleus.github.io/100-Days-of-Python/Day%2010/Calculator%20Project/) |
 | 11 | [Blackjack](Day%2011/task) | Capstone project: functions with `return`, lists, `while` loops, refactoring a full draft | [▶️ Play](https://stentorcoeruleus.github.io/100-Days-of-Python/Day%2011/task/) |
+| 14 | [Higher or Lower](Day%2014/Higher%20or%20Lower%20Project) | Beginner section final project: lists of dictionaries, `random.choice()`, nested functions, debugging edge cases | [▶️ Play](https://stentorcoeruleus.github.io/100-Days-of-Python/Day%2014/Higher%20or%20Lower%20Project/) |
 
 ---
 
