@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Higher or Lower</title>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.29.4/full/pyodide.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 15px;
+    }
+    #terminal {
+      white-space: pre;      /* keeps the ASCII art lined up */
+      overflow-x: auto;
+    }
+    #input-line {
+      display: flex;
+      align-items: center;
+    }
+    #input-line[hidden] {
+      display: none;
+    }
+    #input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #4ec9b0;
+      font: inherit;
+      caret-color: #4ec9b0;
+    }
+  </style>
+</head>
+<body>
+  <div id="terminal">Loading Python, this can take a few seconds...</div>
+  <div id="input-line" hidden>
+    <span>&gt;&nbsp;</span>
+    <input id="input" type="text" autocomplete="off" spellcheck="false">
+  </div>
+
+  <script>
+    const terminal = document.getElementById("terminal");
+    const inputLine = document.getElementById("input-line");
+    const inputBox = document.getElementById("input");
+    let sinceLastInput = "";
+
+    // Adds text to the on-screen "terminal"
+    function writeOutput(text) {
+      terminal.textContent += text;
+      sinceLastInput += text;
+      window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    // Shows the input box and waits until the player presses Enter
+    function waitForInput() {
+      return new Promise((resolve) => {
+        inputLine.hidden = false;
+        inputBox.focus();
+        inputBox.addEventListener("keydown", function onKey(event) {
+          if (event.key !== "Enter") return;
+          inputBox.removeEventListener("keydown", onKey);
+          const answer = inputBox.value;
+          inputBox.value = "";
+          inputLine.hidden = true;
+          writeOutput(answer + "\n");
+          sinceLastInput = "";
+          resolve(answer);
+        });
+      });
+    }
+
+    // Backup for browsers that can't pause Python (uses a pop-up instead)
+    function promptFallback() {
+      const answer = window.prompt(sinceLastInput) ?? "";
+      writeOutput(answer + "\n");
+      sinceLastInput = "";
+      return answer;
+    }
+
+    async function main() {
+      const pyodide = await loadPyodide();
+
+      // Send Python's print() output to the page
+      pyodide.setStdout({ batched: (line) => writeOutput(line + "\n") });
+      pyodide.setStderr({ batched: (line) => writeOutput(line + "\n") });
+
+      // Copy your three Python files into Pyodide's virtual file system
+      for (const file of ["main.py", "art.py", "game_data.py"]) {
+        const response = await fetch(file);
+        if (!response.ok) {
+          throw new Error(`Couldn't load ${file} (status ${response.status})`);
+        }
+        pyodide.FS.writeFile(`/home/pyodide/${file}`, await response.text());
+      }
+
+      terminal.textContent = "";
+
+      // Replace Python's input() with one that uses the input box, then run main.py
+      await pyodide.runPythonAsync(`
+import builtins
+import runpy
+import sys
+
+import js
+from pyodide.ffi import run_sync
+
+
+def browser_input(prompt=""):
+    js.writeOutput(prompt)
+    if hasattr(js.WebAssembly, "Suspending"):
+        return run_sync(js.waitForInput())
+    return js.promptFallback()
+
+
+builtins.input = browser_input
+sys.path.insert(0, "/home/pyodide")
+runpy.run_path("/home/pyodide/main.py", run_name="__main__")
+`);
+
+      writeOutput("\nThanks for playing! Refresh the page to start again.\n");
+    }
+
+    main().catch((error) => writeOutput(`\nError: ${error}\n`));
+  </script>
+</body>
+</html>
