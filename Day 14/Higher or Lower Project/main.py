@@ -39,6 +39,7 @@ def game():
 
             if choice=="A":
                 if followers[0]>=followers[1]:
+                    print("\n" * 20)
                     print("That's right!")
                     score+=1
                     print(f"Current score: {score}")
@@ -51,6 +52,7 @@ def game():
                     another_round = False
             elif choice=="B":
                 if followers[1]>=followers[0]:
+                    print("\n" * 20)
                     print("That's right!")
                     score+=1
                     print(f"Current score: {score}")
@@ -70,8 +72,13 @@ def game():
         followers=[]
         showdown()
         again=input("Would you like to play again? Type 'ENTER' to start or 'EXIT' to quit.").upper()
-        if again=="EXIT":
+        if again=="ENTER":
+            print("\n" * 20)
+        elif again=="EXIT":
             playing=False
+        else:
+            playing=False
+
 
 game()
 

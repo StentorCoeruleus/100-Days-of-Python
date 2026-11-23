@@ -48,12 +48,32 @@
     const inputLine = document.getElementById("input-line");
     const inputBox = document.getElementById("input");
     let sinceLastInput = "";
+    let blankLines = 0;
 
     // Adds text to the on-screen "terminal"
     function writeOutput(text) {
       terminal.textContent += text;
       sinceLastInput += text;
       window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    // Wipes the on-screen "terminal", like clearing the screen in a real terminal
+    function clearScreen() {
+      terminal.textContent = "";
+      sinceLastInput = "";
+    }
+
+    // Handles each line Python prints. A run of 10 or more blank lines,
+    // such as print("\n" * 20), is treated as "clear the screen".
+    function handleLine(line) {
+      if (line === "") {
+        blankLines += 1;
+        if (blankLines === 10) clearScreen();
+        if (blankLines >= 10) return;
+      } else {
+        blankLines = 0;
+      }
+      writeOutput(line + "\n");
     }
 
     // Shows the input box and waits until the player presses Enter
@@ -69,6 +89,7 @@
           inputLine.hidden = true;
           writeOutput(answer + "\n");
           sinceLastInput = "";
+          blankLines = 0;
           resolve(answer);
         });
       });
@@ -79,6 +100,7 @@
       const answer = window.prompt(sinceLastInput) ?? "";
       writeOutput(answer + "\n");
       sinceLastInput = "";
+      blankLines = 0;
       return answer;
     }
 
@@ -86,7 +108,7 @@
       const pyodide = await loadPyodide();
 
       // Send Python's print() output to the page
-      pyodide.setStdout({ batched: (line) => writeOutput(line + "\n") });
+      pyodide.setStdout({ batched: handleLine });
       pyodide.setStderr({ batched: (line) => writeOutput(line + "\n") });
 
       // Copy your three Python files into Pyodide's virtual file system
