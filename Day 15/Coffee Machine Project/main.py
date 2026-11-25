@@ -63,7 +63,7 @@ def check_and_return_value(coin):
 
 
 def check_money(coffee):
-    """Ask for coins and return True if they cover the drink's cost, printing any change; otherwise return False"""
+    """Ask for coins and return True if they cover the drink's cost, printing any change; otherwise return False."""
     print("Please insert coins")
     user_quarters = check_and_return_value("quarters")
     user_dimes = check_and_return_value("dimes")
