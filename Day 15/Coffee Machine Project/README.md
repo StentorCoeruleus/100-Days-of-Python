@@ -18,9 +18,9 @@ There are three ways to try the Coffee Machine.
 
 **[Launch the Coffee Machine](https://stentorcoeruleus.github.io/100-Days-of-Python/Day%2015/Coffee%20Machine%20Project/)**
 
-This runs the Python code directly in your web browser using [Pyodide](https://pyodide.org/). Python takes a few seconds to load. Click **Start coffee machine**, then type each answer into the pop-up box that appears.
+This runs the Python code directly in your web browser using [Pyodide](https://pyodide.org/). Python takes a few seconds to load. Then type your answer into the box at the bottom of the black screen and press *Enter*. Type `off` to switch the machine off, then click **Restart coffee machine** to start again with a fully stocked machine.
 
-Everything printed by the program, along with your answers, appears on the page once the machine is switched off. Type `off`, or press **Cancel** in a pop-up, to switch it off. **Restart coffee machine** starts again with a fully stocked machine.
+For the best experience, use **Chrome** or **Edge**. Other browsers, such as Firefox and Safari, ask for your answers in pop-up boxes instead. Pressing **Cancel** in a pop-up switches the machine off.
 
 ### Option 2: Run it on your computer with Python 3
 
@@ -166,7 +166,7 @@ The Boolean flag `machine_on` keeps the main loop running until the user types `
 | [`main.py`](main.py) | The whole program: the menu, resources, functions and main loop |
 | `index.html` | Runs the program in a web browser using Pyodide |
 
-`index.html` loads `main.py` directly, so the browser version always runs the latest version of the Python code. Each `input()` opens a pop-up box, and pressing **Cancel** switches the machine off.
+`index.html` loads `main.py` directly, so the browser version always runs the latest version of the Python code. It replaces Python's `input()` with an input box inside the on-screen terminal, and Python pauses until the user presses *Enter*. In browsers that can't pause Python this way, it falls back to pop-up boxes.
 
 ---
 
@@ -345,7 +345,7 @@ This says that `MENU`'s keys are strings and its values are dictionaries.
 
 ### 12. Docstrings
 
-As in my Day 14 project, each function has a docstring explaining what it does. This time I made sure each one describes what the function *returns*, not just what it does.
+As in my Day 14 project, each function has a docstring explaining what it does. This time I made sure each one describes what the function **returns**, not just what it does.
 
 ---
 
@@ -364,7 +364,7 @@ Key learning outcomes include:
 - That indentation can change what code means, as with `while ... else`.
 - Giving each function one job, so it's easier to test and fix.
 
-The most important lesson was the order in which things happen matters. Three of my bugs came from doing things too early: deducting ingredients before checking them, deducting them before payment, and taking money before the drink was made. Checking everything first, and only changing the machine's resources once the order is certain to succeed, fixed all three.
+The most important lesson was **the order in which things happen matters**. Three of my bugs came from doing things too early: deducting ingredients before checking them, deducting them before payment, and taking money before the drink was made. Checking everything first, and only changing the machine's resources once the order is certain to succeed, fixed all three.
 
 ---
 

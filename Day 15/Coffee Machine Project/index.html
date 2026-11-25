@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Coffee Machine</title>
-  <!-- Pyodide: Python 3.12 running in the browser -->
-  <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+  <!-- Pyodide: Python running in the browser -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.29.4/full/pyodide.js"></script>
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -25,92 +25,165 @@
       color: white;
       cursor: pointer;
     }
-    button:disabled { background: #b9a596; cursor: not-allowed; }
-    #output {
+    button[hidden] { display: none; }
+    #screen {
       background: #1e1e1e;
       color: #e8e8e8;
-      font-family: Consolas, monospace;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 15px;
       padding: 16px;
       border-radius: 6px;
-      min-height: 200px;
-      white-space: pre-wrap;
-      margin-top: 16px;
+      min-height: 300px;
+      max-height: 60vh;
+      overflow-y: auto;
+      margin: 16px 0;
+      cursor: text;
     }
+    #terminal { white-space: pre-wrap; }
     .user-input { color: #f0c27b; }
+    #input-line {
+      display: flex;
+      align-items: center;
+    }
+    #input-line[hidden] { display: none; }
+    #input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #f0c27b;
+      font: inherit;
+      caret-color: #f0c27b;
+    }
   </style>
 </head>
 <body>
   <h1>☕ Coffee Machine</h1>
   <p>Day 15 of 100 Days of Code: The Complete Python Pro Bootcamp.
-     Answer each question in the pop-up box. Type <code>report</code> to see resources,
-     or <code>off</code> (or press Cancel) to switch the machine off.</p>
+     Type your answers into the black box and press <b>Enter</b>.
+     Type <code>report</code> to see the machine's resources, or <code>off</code> to switch it off.</p>
 
-  <button id="start" disabled>Loading Python…</button>
-  <div id="output"></div>
+  <div id="screen">
+    <div id="terminal">Loading Python, this can take a few seconds...</div>
+    <div id="input-line" hidden>
+      <span>&gt;&nbsp;</span>
+      <input id="input" type="text" autocomplete="off" spellcheck="false" aria-label="Your answer">
+    </div>
+  </div>
+
+  <button id="restart" hidden>Restart coffee machine</button>
 
   <script>
-    const output = document.getElementById("output");
-    const startButton = document.getElementById("start");
+    const screenBox = document.getElementById("screen");
+    const terminal = document.getElementById("terminal");
+    const inputLine = document.getElementById("input-line");
+    const inputBox = document.getElementById("input");
+    const restartButton = document.getElementById("restart");
+    let sinceLastInput = "";
 
-    // Lines printed since the last question, shown inside the pop-up
-    // (the page can't redraw while a pop-up is open).
-    let pendingLines = [];
+    // Adds text to the black box and scrolls to the bottom
+    function writeOutput(text, className) {
+      const span = document.createElement("span");
+      span.textContent = text;
+      if (className) span.className = className;
+      terminal.appendChild(span);
+      sinceLastInput += text;
+      screenBox.scrollTop = screenBox.scrollHeight;
+    }
 
-    function addToOutput(text, className) {
-      const line = document.createElement("div");
-      line.textContent = text;
-      if (className) line.className = className;
-      output.appendChild(line);
+    // Clicking anywhere in the black box puts the cursor in the input box
+    screenBox.addEventListener("click", () => {
+      if (!inputLine.hidden) inputBox.focus();
+    });
+
+    // Shows the input box and waits until the user presses Enter
+    function waitForInput() {
+      return new Promise((resolve) => {
+        inputLine.hidden = false;
+        inputBox.focus();
+        screenBox.scrollTop = screenBox.scrollHeight;
+        inputBox.addEventListener("keydown", function onKey(event) {
+          if (event.key !== "Enter") return;
+          inputBox.removeEventListener("keydown", onKey);
+          const answer = inputBox.value;
+          inputBox.value = "";
+          inputLine.hidden = true;
+          writeOutput("> " + answer + "\n", "user-input");
+          sinceLastInput = "";
+          resolve(answer);
+        });
+      });
+    }
+
+    // Backup for browsers that can't pause Python (uses a pop-up instead)
+    function promptFallback() {
+      const answer = window.prompt(sinceLastInput);
+      sinceLastInput = "";
+      if (answer === null) return null;  // Cancel pressed
+      writeOutput("> " + answer + "\n", "user-input");
+      return answer;
     }
 
     async function main() {
       const pyodide = await loadPyodide();
 
-      // Send everything Python prints to the page.
-      pyodide.setStdout({
-        batched: (text) => {
-          addToOutput(text);
-          pendingLines.push(text);
-        },
-      });
+      // Send Python's print() output to the black box
+      pyodide.setStdout({ batched: (line) => writeOutput(line + "\n") });
+      pyodide.setStderr({ batched: (line) => writeOutput(line + "\n") });
 
-      // Every input() in Python opens a pop-up box.
-      pyodide.setStdin({
-        stdin: () => {
-          const answer = window.prompt(pendingLines.join("\n"));
-          pendingLines = [];
-          if (answer === null) return undefined; // Cancel pressed: end the program
-          addToOutput("> " + answer, "user-input");
-          return answer;
-        },
-      });
+      // Copy main.py into Pyodide's virtual file system
+      const response = await fetch("main.py");
+      if (!response.ok) {
+        throw new Error(`Couldn't load main.py (status ${response.status})`);
+      }
+      pyodide.FS.writeFile("/home/pyodide/main.py", await response.text());
 
-      // Load main.py from the same folder as this page.
-      const code = await (await fetch("main.py")).text();
+      // Replace Python's input() with one that uses the input box
+      pyodide.runPython(`
+import builtins
 
-      startButton.textContent = "Start coffee machine";
-      startButton.disabled = false;
+import js
+from pyodide.ffi import run_sync
 
-      startButton.addEventListener("click", () => {
-        output.innerHTML = "";
-        pendingLines = [];
-        startButton.disabled = true;
+
+def browser_input(prompt=""):
+    js.writeOutput(prompt)
+    if hasattr(js.WebAssembly, "Suspending"):
+        return run_sync(js.waitForInput())
+    answer = js.promptFallback()
+    if answer is None:
+        raise EOFError
+    return answer
+
+
+builtins.input = browser_input
+`);
+
+      async function runMachine() {
+        restartButton.hidden = true;
+        terminal.textContent = "";
+        sinceLastInput = "";
         try {
-          pyodide.runPython(code);
-          addToOutput("Machine switched off.");
+          // Runs main.py from the start, so the machine is fully restocked
+          await pyodide.runPythonAsync(`
+import runpy
+try:
+    runpy.run_path("/home/pyodide/main.py", run_name="__main__")
+except EOFError:
+    pass
+`);
+          writeOutput("\nMachine switched off.\n");
         } catch (error) {
-          if (String(error).includes("EOFError")) {
-            addToOutput("Machine switched off.");
-          } else {
-            addToOutput(String(error));
-          }
+          writeOutput(`\nError: ${error}\n`);
         }
-        startButton.textContent = "Restart coffee machine";
-        startButton.disabled = false;
-      });
+        restartButton.hidden = false;
+      }
+
+      restartButton.addEventListener("click", runMachine);
+      runMachine();
     }
 
-    main();
+    main().catch((error) => writeOutput(`\nError: ${error}\n`));
   </script>
 </body>
 </html>
