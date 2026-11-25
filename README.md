@@ -17,6 +17,7 @@ I'm teaching myself Python as part of my move into software development. Each pr
 | 10 | [Calculator](Day%2010/Calculator%20Project) | Functions with outputs, dictionaries, Boolean flags | [▶️ Play](https://stentorcoeruleus.github.io/100-Days-of-Python/Day%2010/Calculator%20Project/) |
 | 11 | [Blackjack](Day%2011/task) | Capstone project: functions with `return`, lists, `while` loops, refactoring a full draft | [▶️ Play](https://stentorcoeruleus.github.io/100-Days-of-Python/Day%2011/task/) |
 | 14 | [Higher or Lower](Day%2014/Higher%20or%20Lower%20Project) | Beginner section final project: lists of dictionaries, `random.choice()`, nested functions, debugging edge cases | [▶️ Play](https://stentorcoeruleus.github.io/100-Days-of-Python/Day%2014/Higher%20or%20Lower%20Project/) |
+| 15 | [Coffee Machine](Day%2015/Coffee%20Machine%20Project) | Intermediate section: nested dictionaries, `try`/`except` input validation, `:.2f` money formatting, type hints | [▶️ Play](https://stentorcoeruleus.github.io/100-Days-of-Python/Day%2015/Coffee%20Machine%20Project/) |
 
 ---
 
@@ -28,7 +29,7 @@ Each project includes an `index.html` file that runs the original Python code di
 
 ## Running the Projects Locally
 
-1. Install [Python 3](https://www.python.org/downloads/).
+1. Install [Python 3](https://www.python.org/downloads/). Python 3.12 or newer is recommended, because the Day 15 Coffee Machine uses f-string features that older versions don't support.
 2. Clone this repository:
    ```bash
    git clone https://github.com/StentorCoeruleus/100-Days-of-Python.git
